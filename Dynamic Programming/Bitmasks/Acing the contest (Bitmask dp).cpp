@@ -1,0 +1,94 @@
+#include<bits/stdc++.h>
+/*
+    Problem: 2020 ICPC Gran Premio de Mexico 3ra Fecha - A. Acing the contest
+    Verdict: AC
+*/
+using namespace std;
+
+typedef long long ll;
+typedef pair<int,int> pii;
+typedef pair<ll,ll> pll;
+typedef vector<int> vi;
+#define FF first
+#define SS second
+#define sf scanf
+#define pf printf
+#define nl printf("\n")
+#define si(x) scanf("%d",&x)
+#define sii(x,y) scanf("%d%d",&x,&y)
+#define siii(x,y,z) scanf("%d%d%d",&x,&y,&z)
+#define sl(x) scanf("%lld",&x)
+#define sll(x,y) scanf("%lld%lld",&x,&y)
+#define slll(x,y,z) scanf("%lld%lld%lld",&x,&y,&z)
+#define FOR(i,n) for(int i=0; i<n; i++)
+#define dbug(x) cerr<<"dbug: "<<x<<"\n"
+#define CHK cerr<<"----------------\nCAME HERE\n----------------\n";
+
+#include<ext/pb_ds/assoc_container.hpp>
+#include<ext/pb_ds/tree_policy.hpp>
+
+using namespace __gnu_pbds;
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> Set;
+template<typename T1, typename T2> inline std::ostream& operator << (std::ostream& os, const std::pair<T1, T2>& p){return os << "(" << p.first << ", " << p.second << ")";}
+
+///------------------------------------------------------TEMPLATE END------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const double PI = 2*acos(0.0);
+const int MOD = 1e9+7;
+const int MAX = 1e5+5;
+
+int dp[(1<<10)+1][101][101];
+int E[12];
+int students,problems;
+pii arr[102];
+
+int f(int mask, int i, int energy){
+    if(i==problems)return 0;
+    if(energy==0 && mask==(1<<students)-1)return 0;
+
+    int &ret = dp[mask][i][energy];
+    if(~ret)return ret;
+    ret=0;
+
+    ret=f(mask,i+1,energy);
+    if(arr[i].FF<=energy)ret=max(ret, f(mask,i+1,energy-arr[i].FF)+arr[i].SS);
+    for(int j=0; j<students; j++){
+        if(!bool(mask&(1<<j))){
+            ret=max(ret, f(mask|(1<<j), i, E[j]));
+        }
+    }
+
+    return ret;
+}
+
+inline void Solve(int Case){
+    memset(dp,-1,sizeof(dp));
+    sii(students,problems);
+
+    FOR(i,students)si(E[i]);
+    FOR(i,problems)si(arr[i].FF);
+    FOR(i,problems)si(arr[i].SS);
+
+    int ans=0;
+    //for(int i=0; i<n; i++)ans=max(ans,f((mask|(1<<i), 0, E[i])))
+    pf("%d\n",f(0,0,0));
+
+}
+
+  //#define Multiple_Test_Cases
+int main(){
+    //ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int T=1;
+    #ifdef Multiple_Test_Cases
+        //cin>>T;
+        si(T);
+        for(int Case=1; Case<=T; Case++)
+            Solve(Case);
+    #else
+        Solve(0);
+    #endif
+
+return 0;
+}
