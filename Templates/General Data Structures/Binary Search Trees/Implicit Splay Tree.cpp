@@ -167,10 +167,8 @@ struct ImplicitSplayTree{
 	void erase(int i){/// Erases the i'th index
 		node *tmp = kth(i, root);
 		tmp->splay();
-		if(tmp->l)tmp->l->p=NULL;
-		if(tmp->r)tmp->r->p=NULL;
 		merge(root, tmp->l, tmp->r);
-		delete tmp;
+		//delete tmp;
 	}
 	
 	void reverse(int L, int R){
@@ -240,8 +238,14 @@ struct ImplicitSplayTree{
 	
 	///Merges the trees 'l' and 'r' into 'whole'
 	void merge(node* &whole, node *l, node *r){
-		if(l)l->push();
-		if(r)r->push();
+		if(l){
+			l->push();
+			l->p=NULL;
+		}
+		if(r){
+			r->push();
+			r->p=NULL;
+		}
 		if(!l || !r){
 			whole = l?l:r;
 			return;
