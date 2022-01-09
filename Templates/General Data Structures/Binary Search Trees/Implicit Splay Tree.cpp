@@ -1,5 +1,5 @@
 template<typename T>
-struct ImplicitSplayTree{
+struct ImplicitSplayTree{///statically allocated. 0 indexed
 	
 	struct node{
 		node *l, *r, *p;///left, right, parent
@@ -181,7 +181,7 @@ struct ImplicitSplayTree{
 	}
 	
 	
-	int maxIndex(int L, int R){
+	int query(int L, int R){///query the range [L,R]
 		node *l,*r,*m;
 		split(root,l,m,L);
 		split(m,m,r,R-L+1);

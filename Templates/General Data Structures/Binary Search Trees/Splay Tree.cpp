@@ -1,4 +1,4 @@
-template<typename T>
+template<typename T>///statically allocated. 0 indexed
 struct SplayTree{
 	
 	struct node{
@@ -9,6 +9,12 @@ struct SplayTree{
 		node(){
 			l=r=p=NULL;
 			cnt=1;
+		}
+		
+		node(T x){
+			l=r=p=NULL;
+			cnt=1;
+			val=x;
 		}
 		
 		void rotate(){
@@ -25,7 +31,6 @@ struct SplayTree{
 			p = g;
 			updatecnt();
 		}
-		
 		
 		inline void leftRotate(){
 			p->r = l;
@@ -61,28 +66,32 @@ struct SplayTree{
 		}
 		
 	}*root=NULL;
+	node *arr=NULL;
+	int totalSize;
+	int nodeCounter=0;
 	
-	
-	SplayTree(){root=NULL;}
+	SplayTree(int n){
+		root=NULL;
+		totalSize=n;
+		arr = (node*)malloc(sizeof(node)*n);
+	}
 	~SplayTree(){
-		stack<node*>st;
-		if(root)st.push(root);
-		while(!st.empty()){
-			node *top = st.top();
-			st.pop();
-			if(top->r)st.push(top->r);
-			if(top->l)st.push(top->l);
-			delete top;
-		}
+		free(arr);
 	}
 	
+	inline node *newnode(T val){
+		assert(nodeCounter<totalSize);
+		node *tmp = (node*)(arr + nodeCounter);
+		*tmp = node(val);
+		nodeCounter++;
+		return tmp;
+	}
 	
 	inline int getcnt(node *cur){return cur?cur->cnt:0;}
 	inline bool empty(){return getcnt(root)==0;}
 	inline int size(){return getcnt(root);}
 	
-	node *findNode(T val){
-		node *curnode=root;
+	node *findNode(T val, node *curnode){
 		node *prevNode=NULL;
 		
 		while(curnode!=NULL){
@@ -97,18 +106,19 @@ struct SplayTree{
 	}	
 	
 	node *findMax(node *cur){
-		node *ret = cur;
-		ret->push();
-		while(ret->r){
-			ret->push();
-			ret = ret->r;
+		node *ret=NULL;
+		node *tmp=cur;
+		while(tmp){
+			tmp->push();
+			ret=tmp;
+			tmp = tmp->r;
 		}
 		return ret;
 	}
 	
-	bool exists(T val){/// Returns true if 'val' exists in the tree
+	bool exists(T val){ /// Returns true if 'val' exists in the tree
 		if(root==NULL)return 0;
-		node *cur = findNode(val);
+		node *cur = findNode(val,root);
 		cur->splay();
 		root=cur;
 		
@@ -117,20 +127,18 @@ struct SplayTree{
 	
 	void insert(T val){/// Inserts 'val' if it doesn't already exist
 		if(root==NULL){
-			root = new node();
-			root->val = val;
+			root = newnode(val);
 			return;
 		}
 		
-		node *cur = findNode(val);
+		node *cur = findNode(val,root);
 		if(cur->val == val){
 			cur->splay();
 			root=cur;
 			return;
 		}
 		
-		node *newNode = new node();
-		newNode->val = val;
+		node *newNode = newnode(val);
 		if(cur->val < val)cur->r = newNode;
 		else cur->l = newNode;
 		cur->updatecnt();
@@ -142,7 +150,7 @@ struct SplayTree{
 	
 	void erase(T val){/// Erases 'val' from the tree if it exists
 		if(root==NULL)return;
-		node *cur = findNode(val);
+		node *cur = findNode(val,root);
 		cur->splay();
 		root = cur;
 		if(cur->val != val)return;
@@ -156,9 +164,6 @@ struct SplayTree{
 		if(l)l->p=NULL;
 		if(r)r->p=NULL;
 		
-		delete cur;
-		cur=NULL;
-		
 		if(l){
 			node *mxNode = findMax(l);
 			mxNode->r = r;
@@ -170,7 +175,7 @@ struct SplayTree{
 		else root = r;
 	}
 	
-	T kth(int k){/// returns the k'th smallest element (0 indexed)
+	T kth(int k){/// returns the kth element (0 indexed)
 		assert(k<size());
 		node *cur = root;
 		T ret;
@@ -214,6 +219,59 @@ struct SplayTree{
 		root=cur;
 		
 		return cnt;
+	}
+	
+	///Split 'whole' into two subtrees: 'l' and 'r'
+	///'l' contains elements strictly less than 'key'
+	void split(node *whole, node* &l, node* &r, T key){
+		if(!whole){
+			l=r=NULL;
+			return;
+		}
+		
+		whole->push();
+		node *tmp = findNode(key,whole);
+		tmp->splay();
+		
+		if(tmp->val < key){
+			l=tmp;
+			r=tmp->r;
+			tmp->r=NULL;
+			if(r)r->p=NULL;
+			l->p=NULL;
+		}
+		else{
+			l=tmp->l;
+			r=tmp;
+			tmp->l=NULL;
+			if(l)l->p=NULL;
+			r->p=NULL;
+		}
+		
+		if(l)l->updatecnt();
+		if(r)r->updatecnt();
+	}
+	
+	///Merges the trees 'l' and 'r' into 'whole'
+	void merge(node* &whole, node *l, node *r){
+		if(l){
+			l->push();
+			l->p=NULL;
+		}
+		if(r){
+			r->push();
+			r->p=NULL;
+		}
+		if(!l || !r){
+			whole = l?l:r;
+			return;
+		}
+		node *tmp = findMax(l);
+		tmp->splay();
+		tmp->r = r;
+		r->p = tmp;
+		whole = tmp;
+		whole->updatecnt();
 	}
 	
 };
