@@ -17,16 +17,19 @@ const int N = 2e5+5;
  
 int arr[N];
 int n;
+ll ans=0;
  
-ll f(int l, int r){
-	if(l>r)return 0;
-	if(l==r)return arr[l]%n==0;
+void f(int l, int r){
+	if(l>r)return;
+	if(l==r){
+		ans+=(arr[l]%n==0);
+		return;
+	}
  
 	int mid = (l+r)>>1;
-	ll ret = f(l,mid) + f(mid+1, r);
 	
-	map<ll,int>mp;
-	ll sum=0;
+	map<int,int>mp;
+	int sum=0;
 	for(int i=mid; i>=l; i--){
 		sum = (sum+arr[i])%n;
 		mp[sum]++;
@@ -35,10 +38,12 @@ ll f(int l, int r){
 	sum=0;
 	for(int i=mid+1; i<=r; i++){
 		sum = (sum+arr[i])%n;
-		if(sum==0)ret+=mp[0];
-		else ret += mp[n-sum];
+		if(sum==0)ans+=mp[0];
+		else ans += mp[n-sum];
 	}
-	return ret;
+	
+	f(l,mid);
+	f(mid+1, r);
 }
  
 void solve(int casenum){
@@ -49,7 +54,8 @@ void solve(int casenum){
 		if(arr[i]<0)arr[i]+=n;
 	}
 	
-	pf("%lld\n",f(0,n-1));
+	f(0,n-1);
+	pf("%lld\n",ans);
 }
  
 int main(){
