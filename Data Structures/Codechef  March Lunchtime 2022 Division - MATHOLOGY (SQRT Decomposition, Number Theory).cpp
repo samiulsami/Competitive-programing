@@ -1,10 +1,10 @@
 #include<bits/stdc++.h>
 using namespace std;
-// #pragma GCC target ("avx2")
-// #pragma GCC optimization ("O3")
-// #pragma GCC optimization ("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+ #pragma GCC target ("avx2")
+ #pragma GCC optimization ("O3")
+ #pragma GCC optimization ("unroll-loops")
+ #pragma GCC optimize("Ofast")
+ #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 typedef int64_t ll;
 typedef array<int,2> pii;
 #define sf scanf
@@ -24,31 +24,43 @@ mt19937_64 rng((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::hig
 inline ll rand(ll l, ll r){uniform_int_distribution<ll> RNG(l,r);return RNG(rng);}
 
 const int N = 100005;
-const int K = 400;
+const int K = 320;
 int arr[N];
 int divisors[N];
 vector<pii>queries[N];
 int ans[N];
 int mn,mx;
 int n;
+int vis[N]={0};
+int color=1;
 int Block[K+5];
 int P[N];
 
-inline void update(int pos, int val){
-	Block[pos/K] = max(Block[pos/K], val);
+inline void update(int pos, int ind){
+	if(vis[pos]!=color && vis[pos]!=(-color)){
+		vis[pos]=color;
+		P[pos]=ind;
+	}
+	else{
+		Block[pos/K] = max(Block[pos/K], P[pos]);
+		divisors[pos] = P[pos];
+		P[pos]=ind;
+		vis[pos]=-color;
+	}
 }
 
 int Find(){
-	int i;
-	for(i=K+1;i>0;i--){
-		if(Block[i-1]>=mn)break;
-	}
-	i*=K;
-	i=min(i,mx);
+	int i=K;
 	for(;i>=0;i--){
-		if(P[i]>=mn)return i;
+		if(Block[i]>=mn)break;
 	}
-	return -1;
+	if(i==-1)return -1;
+	i*=K;
+	for(int x=i,lim=min(i+K-1,mx); x<=lim; x++){
+		if(divisors[x]>=mn && vis[x]==-color)i=x;
+	}
+	
+	return i;
 }
 
 void solve(int casenum){
@@ -59,11 +71,8 @@ void solve(int casenum){
 		si(arr[i]);
 		mx=max(mx,arr[i]);
 	}
-	for(int i=0; i<=K+1; i++)Block[i]=-1;
-	for(int i=0; i<=mx; i++){
-		divisors[i]=-1;
-		P[i]=-1;
-	}
+	for(int i=0; i<=K+2; i++)Block[i]=-1;
+	color++;
 	
 	int l,r;
 	for(int i=0; i<q; i++){
@@ -74,22 +83,8 @@ void solve(int casenum){
 	for(int i=0,cur; i<n; i++){
 		for(int j=1,x; j*j<=arr[i]; j++){
 			if(arr[i]%j==0){
-				x=j;
-				if(divisors[x]==-1)divisors[x]=i;
-				else{
-					update(x,divisors[x]);
-					P[x]=divisors[x];
-					divisors[x]=i;
-				}
-				if(j*j!=arr[i]){
-					x=arr[i]/j;
-					if(divisors[x]==-1)divisors[x]=i;
-					else{
-						update(x,divisors[x]);
-						P[x]=divisors[x];
-						divisors[x]=i;
-					}
-				}
+				update(j, i);
+				if(j*j!=arr[i])update(arr[i]/j, i);
 			}
 		}
 		
