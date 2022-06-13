@@ -51,7 +51,7 @@ vector<pii> factorize(int x){
 vector<pii> factorize(int x){
     vector<pii> ret;
     for(int p:primes){
-        if(1LL*p*p>x)break;
+        if(p>x)break;
         int n=x,freq=0;
         while(n/p>0){
             freq+=n/p;
@@ -232,6 +232,8 @@ double kthRoot(double x, double k){
 ///if 'd' is a divisor of n, then there are phi(n/d) numbers i<=n for which gcd(i,n)==d
 
 ///Sum of gcd(i,n) for i=1 to n-1
+//LCM(1,n) + LCM(2,n) + ... + LCM(n,n) = (n/2)*[summation i:0 to k](phi[d[i]] * d[i]) + n/2 
+//https://forthright48.com/spoj-lcmsum-lcm-sum
 
 for(int i=1; i<n; i++){
     for(int j=i+i; j<=n; j++){
