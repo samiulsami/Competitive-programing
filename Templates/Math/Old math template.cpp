@@ -1,44 +1,83 @@
 ///Generates prime numbers from [1,n] in O(nloglogn)
-const int primesN=400000;
-uint32_t status[(primesN>>6)+2];
+const int N=1e6+5;
+uint32_t status[(N>>6)+2];
 inline bool checkP(uint32_t i){return (status[(i>>6)]&(1<<((i>>1)&31)));}
 inline void setP(uint32_t i){ status[i>>6]|=(1<<((i>>1)&31));}
 vector<int>primes;
 
 void sieve(){
-    uint32_t sq=sqrt(primesN)+5;
+    uint32_t sq=sqrt(N)+5;
     for(uint32_t i=3; i<=sq; i+=2)
         if(!checkP(i))
-            for(uint32_t j=i*i,inc=(i<<1); j<=primesN; j+=inc)
+            for(uint32_t j=i*i,inc=(i<<1); j<N; j+=inc)
                 setP(j);
     primes.push_back(2);
-    for(uint32_t i=3; i<=primesN; i+=2)if(!checkP(i))primes.push_back(i);
+    for(uint32_t i=3; i<N; i+=2)if(!checkP(i))primes.push_back(i);
+}
+
+vector<pair<long long, int> > factorize(long long x){
+	vector<pair<long long, int> > ret;
+	for(int i:primes){
+		if(1LL*i*i>=N)break;
+		if(x%i==0){
+			ret.push_back({i,0});
+			while(x%i==0){
+				x/=i;
+				ret.back().second++;
+			}
+		}
+	}
+	if(x>1)ret.push_back({x,1});
+	return ret;
 }
 
 void mobius_init(){
 	///mobius[1] = 1;
 	///mobius[x] = 0 if x is divisible by a^2 where 'a' is a prime
 	///mobius[x] = (-1)^k if 'x' is the product of 'k' distinct primes
-	for(int i=1; i<primesN; i++)mobius[i]=1;
+	for(int i=1; i<N; i++)mobius[i]=1;
 	for(int p:primes){
-		if(1LL*p*p>=primesN)break;
+		if(1LL*p*p>=N)break;
 		int x = p*p;
-		for(int j=x; j<primesN; j+=x)mobius[j]=0;
+		for(int j=x; j<N; j+=x)mobius[j]=0;
 	}
 	for(int p:primes)
-		for(int j=p; j<primesN; j+=p)mobius[j] *= -1;
+		for(int j=p; j<N; j+=p)mobius[j] *= -1;
+}
+
+///standalone mobius
+int mu[N];
+inline void mobius(){
+	///mu[1] = 1;
+	///mu[x] = 0 if x is divisible by a^2 where 'a' is a prime
+	///mu[x] = (-1)^k if 'x' is the product of 'k' distinct primes
+	for(int i=0; i<N; i++)mu[i]=2;
+	mu[1]=1;
+	for(int i=2; i<N; i++){
+		if(mu[i]==2){
+			mu[i]=-1;
+			if(i<=N/i){
+				int x=i*i;
+				for(int j=x; j<N; j+=x)mu[j]=0;
+			}
+			for(int j=i+i; j<N; j+=i){
+				if(mu[j]==2)mu[j]=-1;
+				else mu[j]*=-1;
+			}
+		}
+	}
 }
 
 ///Generates primes from 1 to primesN in O(n)
 ///spf stores the smalles prime factor for each numberconst int primesN=1e5+5;
 typedef pair<int,int> pii;
 
-const int primesN=1e5+5;
-int spf[primesN]={0};
+const int N=1e5+5;
+int spf[N]={0};
 vector<int>primes;
 
 void sieve(){
-	for(int i=2; i<primesN; i++){
+	for(int i=2; i<N; i++){
 		if(spf[i]==0){
 			spf[i]=i;
 			primes.push_back(i);
@@ -48,15 +87,12 @@ void sieve(){
 	}
 }
 
-vector<pii> factorize(int x){
-    vector<pii>ret;
+vector<array<int,2> > factorize(int x){
+    vector<array<int,2> > ret;
     while(x!=1){
-        int curP=spf[x],p=0;
-        while(x%curP==0){
-            x/=curP;
-            p++;
-        }
-        ret.push_back(make_pair(curP,P));
+        int curP=spf[x];
+		ret.push_back(array<int,2>{curP,0});
+        while(x%curP==0)x/=curP,ret.back()[1]++;    
     }
     return ret;
 }
