@@ -57,6 +57,6 @@ struct LCA{
 	}
 	
 	inline int dist(int u, int v){
-		return lvl[u] + lvl[v] - 2*lvl[lca(u,v];
+		return lvl[u] + lvl[v] - 2*lvl[lca(u,v)];
 	}
 }lca;
