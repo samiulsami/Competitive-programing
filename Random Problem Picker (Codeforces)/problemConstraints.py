@@ -4,5 +4,5 @@ maxRating = 1800
 #Leave empty to ignore tags
 includedTags = []
 excludedTags = []
-showTags = True
+showTags = False
 showRating = True
