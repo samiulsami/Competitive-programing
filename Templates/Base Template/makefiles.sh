@@ -2,7 +2,7 @@
 #Shell script to create copies of Template
 #Pass at most 2 arguments: Name of template file, and number of copies to create
 #Example: bash makefiles.sh Template.cpp 5
-cnt=10
+cnt=13
 template="../Template.cpp"
 if ! [ -z "$1" ]
   then
@@ -21,12 +21,14 @@ fi
 newfoldername="Solutions"
 mkdir $newfoldername
 cd $newfoldername
+touch "input.txt"
+touch "output.txt"
 
 for((i=0; i<cnt; i++))
 	do	
 		A=$(printf \\$(printf '%03o' $((i+65))))
 		cat $template > "$A.cpp"
 		start "$A.cpp"
-		sleep 0.03
+		sleep 0.04
 done
 

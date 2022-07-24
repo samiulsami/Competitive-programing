@@ -52,10 +52,7 @@ struct wavelet_tree{///1 indexed
 	long long sumQuery(int l, int r, int k){//Returns the sum of elements less than 'k' in range [l,r]
 		if(l>r || low>=k)return 0;
 		if(low==high)return 1LL*(r-l+1)*low;
-        if(high<k){
-			if(sum==NULL)return 0;
-			return sum[r]-sum[l-1];
-		}
+        if(high<k)return sum[r]-sum[l-1];
         return lft->sumQuery(pref[l-1]+1, pref[r], k) + rgt->sumQuery(l-pref[l-1], r-pref[r], k);
 	}
     ~wavelet_tree(){

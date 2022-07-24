@@ -10,11 +10,6 @@
     Time complexity: O(E * V^2)
 */
 
-#include<bits/stdc++.h>
-using namespace std;
-
-typedef long long ll;
-
 struct edge{
     int u,v,cap,flow;
     edge(){}
@@ -89,9 +84,3 @@ struct Dinic{
         }
 
 };
-
-int main(){
-
-
-return 0;
-}

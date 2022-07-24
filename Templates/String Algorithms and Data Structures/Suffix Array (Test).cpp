@@ -1,11 +1,18 @@
+///0 indexed
+///Don't insert '#' at the beginning of the string
+///LCP[i] is the LCP of SA[i] and SA[i-1]
+///invSA[i] is the position of 'i' in the suffix array
+///LCP of the substrings beginning at indices 'l' and 'r' = LCP(invSA[l]+1, invSA[r]) (swap l and r if invSA[l]<invSA[r])
+///O(nlogn) Time and Memory
+
 const int K=__lg(N)+2;
-struct SuffixArray{
+struct SuffixArray{///0 indexed
     int SA[N],LCP[N],invSA[N];
-    int RA[N],c[N],n;
+    int RA[N],c[N+200],n;
     int Table[K][N]={{0}};
     inline void countingSort(int k){
         int mx = max(130,n),i,j,sum;
-		fill(c,c+mx+1,0);
+		fill(c,c+mx+5,0);
 		for(i=0; i<n; i++)c[i+k<n ? RA[i+k]:0]++;
 		for(i=0,sum=0; i<mx; i++){j=c[i],c[i]=sum,sum+=j;}
 		for(i=0; i<n; i++)invSA[c[SA[i]+k<n?RA[SA[i]+k]:0]++]=SA[i];

@@ -11,11 +11,6 @@
     Time Complexity: ????
 */
 
-#include<bits/stdc++.h>
-using namespace std;
-
-typedef long long ll;
-
 namespace mcmf{
 
         struct edge{
@@ -122,10 +117,4 @@ namespace mcmf{
 
             return {cost,flow};
         }
-}
-
-int main(){
-
-
-return 0;
 }

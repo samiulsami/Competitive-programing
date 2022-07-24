@@ -1,31 +1,28 @@
-#include<bits/stdc++.h>
-using namespace std;
+template<typename T>
+struct fenwick{///1 indexed
+    vector<T>BIT;
+    int n;
+    fenwick(){n=0;}
+    fenwick(int x):n(x),BIT(n+1,0){}
 
-int BIT[100005];
-int n;
-
-void update(int ind, int val){
-    while(ind<=n){
-        BIT[ind]+=val;
-        ind+=(ind&-ind);
+    void update(int ind, T val){
+        while(ind<=n){
+            BIT[ind]+=val;
+            ind+=(ind&-ind);
+        }
     }
-}
 
-int query(int ind){
-    int ret=0;
-    while(ind>0){
-        ret+=BIT[ind];
-        ind-=(ind&-ind);
+    T query(int ind){
+        T ret=0;
+        while(ind>0){
+            ret+=BIT[ind];
+            ind-=(ind&-ind);
+        }
+        return ret;
     }
-    return ret;
-}
 
-void range_update(int l, int r, int val){
-    update(l,val);
-    update(r+1,-val);
-}
-
-int main(){
-
-return 0;
-}
+    void range_update(int l, int r, T val){
+        update(l,val);
+        update(r+1,-val);
+    }
+};

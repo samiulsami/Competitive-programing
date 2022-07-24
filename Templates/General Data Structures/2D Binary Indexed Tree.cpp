@@ -1,6 +1,6 @@
 const int N = 1001;
 
-int BIT[N+1][N+1];
+int BIT[N+1][N+1]={0};
 
 int query(int x, int y){
 	int ret=0;
