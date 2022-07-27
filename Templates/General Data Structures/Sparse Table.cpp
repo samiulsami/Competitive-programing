@@ -7,11 +7,11 @@ struct rmq{///0 indexed
 		return min(a,b);
 	}
 	
-	inline void set(int ind, T val){Table[0][ind]=val;}
+	inline void set(int pos, T val){Table[0][pos]=val;}
 
-	void init(int len){
+	void init(int n){
 		for(int i=1; i<=K; i++)
-			for(int j=0; j+(1<<i)-1<len; j++)
+			for(int j=0; j+(1<<i)-1<n; j++)
 				Table[i][j] = Combine(Table[i-1][j], Table[i-1][j+(1<<(i-1))]);
 	}
 	
