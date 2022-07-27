@@ -3,9 +3,9 @@ namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
 
 	inline int64_t modmul(uint64_t a, uint64_t b, uint64_t mod){
 		///Works for numbers less than 2^63 or ~9e18
-        ll ret = a * b - mod * (uint64_t)(1.0L / mod * a * b);
-        return ret + mod * (ret < 0) - mod * (ret >= (int64_t) mod);
-    }
+		ll ret = a * b - mod * (uint64_t)(1.0L / mod * a * b);
+		return ret + mod * (ret < 0) - mod * (ret >= (int64_t) mod);
+	}
 
 	int64_t modpow(int64_t a, int64_t b, int64_t MOD){
 	    if(b==0)return 1;
@@ -50,15 +50,15 @@ namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
 	}
 
 	mt19937_64 rng64((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
-    uint64_t pollard(uint64_t n) {
+	uint64_t pollard(uint64_t n) {
 		uint64_t c = 1, x = 0, y = 0, t = 0, prod = 2, x0 = 1, q;
-        auto f = [&](uint64_t X)->uint64_t{ return modmul(X, X, n) + c;};
-        while (t++ % 40 or fastgcd(prod, n) == 1) {
-            if (x == y) c = rng64()%(n-1)+1, x = x0, y = f(x);
-            if ((q = modmul(prod, max(x, y) - min(x, y), n))) prod = q;
-            x = f(x), y = f(f(y));
-        }
-        return fastgcd(prod, n);
+		auto f = [&](uint64_t X)->uint64_t{ return modmul(X, X, n) + c;};
+		while (t++ % 40 or fastgcd(prod, n) == 1) {
+			if (x == y) c = rng64()%(n-1)+1, x = x0, y = f(x);
+			if ((q = modmul(prod, max(x, y) - min(x, y), n))) prod = q;
+			x = f(x), y = f(f(y));
+		}
+		return fastgcd(prod, n);
 	}
 
 	vector<int64_t> PrimeFactorize(int64_t n){///~O(n^(1/4))
@@ -72,6 +72,7 @@ namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
 
 	vector<int64_t> Factorize(int64_t n){///O(n^(1/3))
 		auto primeFactors = PrimeFactorize(n);
+		sort(all(primeFactors));
 		vector<int64_t>ret;
 		for(int x=0,prevCount,cnt; x<(int)primeFactors.size(); x++){
 			cnt=1;
