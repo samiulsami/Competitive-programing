@@ -12,7 +12,7 @@ inline ull hashSub(ull a, ull b){a-=b;return a>=mod1?a+mod1:a;}
 const ull base1 = (ull)1541 + (ull)rng()%(ull)(1<<22);
 vector<ull>P{1};
 
-struct Hash{
+struct Hash{///1 indexed
     vector<ull>H;
     vector<ull>R;
     int n;
@@ -25,6 +25,6 @@ struct Hash{
             R[j-1] = hashAdd(hashmodmul(R[j], base1), (ull)s[j-2]);
         }
     }
-    ull getHash(int l, int r){return hashSub(H[r], hashmodmul(H[l-1], P[r-l+1]));}
-    ull reverseHash(int l, int r){return hashSub(R[l], hashmodmul(R[r+1], P[r-l+1]));}
+    ull fHash(int l, int r){return hashSub(H[r], hashmodmul(H[l-1], P[r-l+1]));}
+    ull rHash(int l, int r){return hashSub(R[l], hashmodmul(R[r+1], P[r-l+1]));}
 };
