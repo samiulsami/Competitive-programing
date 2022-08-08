@@ -1,3 +1,55 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef int64_t ll;
+#define pii(x) array<int,x>
+#define sz(x) int(x.size())
+#define all(x) x.begin(), x.end()
+#define dbug(x) cout<<"Value of "<<#x<<": "<<x<<"\n"
+mt19937 rng((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
+inline int rand(int l, int r){uniform_int_distribution<int> RNG(l,r);return RNG(rng);}
+
+const int N = 2e5+5;
+
+int dp[20][10][2];
+vector<int>num;
+vector<int>digits{0,2,3,5,7};
+
+int f(int i, bool flag, bool z, int last){
+    if(i==-1)return (z && last!=2 && last!=5);
+    int &ret = dp[i][last][z];
+    if(~ret && !flag)return ret;
+    int cur=0;
+
+    for(int j:digits){
+        if(z && j==0)continue;
+        if(flag && j>num[i])continue;
+        cur |= f(i-1, num[i]==j?flag:0, z||(j>0), j);
+    }
+
+    if(!flag)ret=cur;
+    return cur;
+}
+
+ll prnt(int i, bool flag, bool z, int last, ll ans){
+    if(i==-1)return ans;
+    for(int j=4,x; j>=0; j--){
+        x=digits[j];
+        //if(z && x==0)continue;
+        if(flag && x>num[i])continue;
+        if(f(i-1, num[i]==x?flag:0, z||(x>0), x)){
+            return prnt(i-1, num[i]==x?flag:0, z||(x>0), x, (ans*10LL)+x);
+        }
+    }
+    return 0;
+}
+
+ll getPrev(ll n){
+    num.clear();
+    while(n)num.push_back(n%10),n/=10;
+    return prnt(int(num.size())-1, 1, 0, 0, 0);
+}
+
 namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
     vector<uint64_t>bases{2, 325, 9375, 28178, 450775, 9780504, 1795265022};
     mt19937_64 rng64((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -50,6 +102,7 @@ namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
         return a << shift;
     }
  
+    
     uint64_t pollard(uint64_t n) {
         uint64_t c = 1, x = 0, y = 0, t = 0, prod = 2, x0 = 1, q;
         auto f = [&](uint64_t X)->uint64_t{ return modmul(X, X, n) + c;};
@@ -89,3 +142,39 @@ namespace PollardRho{///Kactl Pollard Rho and Miller Rabin
         return ret;
     }
 };
+
+inline void solve(int caseNum){
+    ll n;
+    cin>>n;
+    ll ans=100;
+    if(n<=10){
+        if(n>=7)ans=7;
+        else if(n>=5)ans=5;
+        else if(n>=3)ans=3;
+        else ans=2;
+    }
+    else{
+        n = getPrev(n);
+        while(!PollardRho::isPrime(n))
+            n = getPrev(n-1);
+        ans=n;
+    }
+    cout<<"Case "<<caseNum<<": "<<ans<<"\n";
+
+}
+
+int main(){
+    memset(dp,-1,sizeof(dp));
+    #ifdef idk123
+        freopen("input.txt","r",stdin);
+        freopen("output.txt","w",stdout);
+    #endif
+   ios_base::sync_with_stdio(0);cin.tie(0);
+   //freopen("input.txt","r",stdin);
+   //freopen("output.txt","w",stdout);
+    int T=1;
+    cin>>T;
+    for(int i=1; i<=T; i++)
+        solve(i);
+return 0;
+}

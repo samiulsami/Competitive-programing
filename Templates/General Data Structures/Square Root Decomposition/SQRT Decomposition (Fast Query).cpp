@@ -1,14 +1,17 @@
+const int K = 50;///Block size
+const int L = (N+K-1)/K;///Number of blocks
+
 struct fastQuery{
 	///0 - indexed
-	///O(sqrt(N)) update, O(1) query
+	///O(K+L) update, O(1) query
 	int arr[N];
-	long long Blocks[K];
-	long long pref[K][K];
+	long long Blocks[L];
+	long long pref[L][K];
 	int n;
 
 	void init(int len){
 		n=len;	
-		for(int i=0; i<K; i++)Blocks[i]=0;
+		for(int i=0,lastBlock = len/K; i<=lastBlock; i++)Blocks[i]=0;
 		for(int i=0,d,r; i<len; i++){
 			d=i/K,r=i%K;
 			pref[d][r]=arr[i];
@@ -43,7 +46,7 @@ struct fastQuery{
 	}
 	
 	void updateBlocks(int BlockNum){
-		for(int i=BlockNum,lastBlock=n/K; i<K; i++){
+		for(int i=BlockNum,lastBlock=n/K; i<L; i++){
 			if(i==lastBlock)Blocks[i] = pref[i][n%K];
 			else Blocks[i] = pref[i][K-1];
 			if(i)Blocks[i] += Blocks[i-1];

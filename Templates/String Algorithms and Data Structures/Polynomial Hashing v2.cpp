@@ -15,7 +15,8 @@ struct Hash{///1 indexed
     int n;
     Hash(){}
     template<typename T>
-    Hash(const T &s, int n):n(n){
+    Hash(const T &s){
+        n = int(s.size());
         while((int)P.size()<=n)P.push_back(mod(1LL*P.back()*base));
         H.resize(n+1);H[0]=0;
         R.resize(n+2);R[n+1]=0;R[0]=0;
