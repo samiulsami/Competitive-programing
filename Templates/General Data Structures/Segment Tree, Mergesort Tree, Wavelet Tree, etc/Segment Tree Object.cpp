@@ -1,15 +1,19 @@
 template<typename T>
 struct segtree{/// 1 indexed
-	vector<T>Tree;
+	T *Tree=NULL;
 	int n;
 	function<T(T,T)> Combine;
 
 	segtree(){}
-	segtree(int x, function<T(T,T)> _cmb):n(x),Tree(4*x){Combine = _cmb;}
+	~segtree(){delete []Tree;}
+	segtree(int x, function<T(T,T)> _cmb):n(x){Combine = _cmb;Tree = new T[4*n];}
+
+	template<typename Iterator>
+	segtree(Iterator l, Iterator r, function<T(T,T)> _cmb):segtree(vector<T>(l,r), _cmb){}
 	segtree(const vector<T> &arr, function<T(T,T)> _cmb){
 		Combine = _cmb;
 		n = int(arr.size());
-		Tree.resize(4*n);
+		Tree = new T[4*n];
 		build(1,1,n,arr);
 	}
 
@@ -41,12 +45,5 @@ struct segtree{/// 1 indexed
 		if(posl>mid)return query(node<<1|1,mid+1,r,posl,posr);
 		if(posr<=mid)return query(node<<1,l,mid,posl,posr);
 		return Combine(query(node<<1,l,mid,posl,posr),query(node<<1|1,mid+1,r,posl,posr));
-	}
-
-	int Find(int node, int l, int r){
-		if(l==r)return l;
-		int mid = (l+r)>>1;
-		if(Tree[node<<1][0] <= Tree[1][1])return Find(node<<1, l, mid);
-		return Find(node<<1|1, mid+1, r);
 	}
 };
