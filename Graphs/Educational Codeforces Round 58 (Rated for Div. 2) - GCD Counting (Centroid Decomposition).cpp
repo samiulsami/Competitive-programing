@@ -8,38 +8,12 @@ typedef int64_t ll;
 #define dbug(x) cerr<<"Value of "<<#x<<": "<<x<<"\n"
 
 const int N = 2e5+5;
-
-const int primesN = 2e5+5;
-int spf[primesN]={0};
-vector<int>primes;
 vector<int>pf[N];
-
-void sieve(){///O(primesN)
-	for(int i=2; i<primesN; i++){
-		if(spf[i]==0){
-			spf[i]=i;
-			primes.push_back(i);
-		}
-		for(int j=0; j<(int)primes.size() && primes[j]<=spf[i] && 1LL*i*primes[j]<primesN; j++)
-			spf[i*primes[j]]=primes[j];
-	}
-}
-
-vector<int>get(int x){
-	vector<int>ret;
-	int p=spf[x];
-	while(p>1){
-		ret.push_back(p);
-		while(x%p==0)x/=p;
-		p=spf[x];
-	}
-	return ret;
-}
-
 int arr[N];
 vector<int>graph[N];
 int ans=0;
 int primeLen[N]={0};
+bool status[N]={0};
 
 struct CentroidDecomposition{
     int subtreeSize[N];
@@ -90,13 +64,7 @@ struct CentroidDecomposition{
 				calc(v,centroid,1,1,G);
 			}
 		}
-		for(int v:graph[centroid]){
-			if(!vis[v]){
-				int G = __gcd(arr[v],arr[centroid]);
-				if(G==1)continue;
-				for(int i:pf[G])primeLen[i]=0;
-			}
-		}
+		for(int i:pf[arr[centroid]])primeLen[i]=0;
 
         for(int v:graph[centroid])
             if(!vis[v])centroid_decomposition(v);
@@ -105,8 +73,14 @@ struct CentroidDecomposition{
 
 
 inline void solve(int caseNum){
-	for(int i=1; i<N; i++)
-		pf[i] = get(i);
+	for(int i=2; i<N; i++){
+		if(!status[i]){
+			for(int j=i; j<N; j+=i){
+				status[j]=1;
+				pf[j].push_back(i);
+			}
+		}
+	}
 
 	int n;
 	cin>>n;
