@@ -1,38 +1,58 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+typedef int64_t ll;
+#define pii(x) array<int,x>
+#define sz(x) int(x.size())
+#define all(x) x.begin(), x.end()
+#define dbug(x) cerr<<"Value of "<<#x<<": "<<x<<"\n"
+
+const int N = 2e5+5;
 string n;
-long long dp[(1<<18)+2][105],m;
-long long powers[22];
+int m;
 
-long long solve(int mask, int rem){
+ll dp[(1<<18)][100];
+
+ll f(int mask, int rem){
     if(mask==(1<<n.length())-1)return rem==0;
-    long long &ret=dp[mask][rem];
-    if(ret!=-1)return ret;
-
-    int power_count=0;
-    for(int i=0; i<n.length(); i++)if(mask&(1<<i))power_count++;
-
+    ll &ret = dp[mask][rem];
+    if(~ret)return ret;
     ret=0;
-    bool vis[10]={0};
-    for(int i=0; i<n.length(); i++){
-        int val=n[i]-48;
-        if(mask==0 && val==0)continue;//no leading zeroes
-        if(mask&(1<<i) || vis[val])continue;
-        vis[val]=1;
-        int newMask = mask|(1<<i);
-        int newRem = (rem+(val*powers[power_count]))%m;
-        ret+=solve(newMask,newRem);
+
+    for(int i=0,j; i<n.length(); i++){
+        if(mask&(1<<i))continue;
+        j=i;
+        while(j+1<n.length() && n[i]==n[j+1])j++;
+        ret += f(mask|(1<<i),(rem*10 + (n[i]-'0'))%m);
+        i=j;
     }
     return ret;
 }
 
-int main(){
-    memset(dp,-1,sizeof(dp));
+inline void solve(int caseNum){
     cin>>n>>m;
-    powers[0]=1;
-    for(int i=0; i<18; i++)powers[i+1]=powers[i]*10;
-    reverse(powers,powers+n.length());
-    cout<<solve(0,0);
+    memset(dp,-1,sizeof(dp));
+    sort(all(n));
+
+    ll ans=0;
+    for(int i=0; i<n.length(); i++){
+        if(n[i]=='0')continue;
+        int j=i;
+        while(j+1<n.length() && n[i]==n[j+1])j++;
+        ans += f((1<<i), (n[i]-'0')%m);
+        i=j;
+    }
+    cout<<ans;
+}
+
+int main(){
+    #ifdef idk123
+        freopen("input.txt","r",stdin);
+        freopen("output.txt","w",stdout);
+    #endif
+    ios_base::sync_with_stdio(0);cin.tie(0);
+    int T=1;
+    //cin>>T;
+    for(int i=1; i<=T; i++)solve(i);
 return 0;
 }
