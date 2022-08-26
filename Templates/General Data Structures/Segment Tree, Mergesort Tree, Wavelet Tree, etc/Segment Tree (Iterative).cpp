@@ -1,7 +1,7 @@
 /**
     Based on https://codeforces.com/blog/entry/18051
 */
-
+///0 indexed
 const int MAX = 1e5+5;
 int n;
 int Tree[2*MAX];
