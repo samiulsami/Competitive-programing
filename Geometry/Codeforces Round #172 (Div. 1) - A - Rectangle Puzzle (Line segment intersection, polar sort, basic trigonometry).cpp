@@ -1,3 +1,14 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef int64_t ll;
+#define pii(x) array<int,x>
+#define sz(x) int(x.size())
+#define all(x) x.begin(), x.end()
+#define dbug(x) cerr<<"Value of "<<#x<<": "<<x<<"\n"
+
+const int N = 2e5+5;
+
 typedef double ptType;
 typedef double ptType2;
 mt19937 rng((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
@@ -288,3 +299,53 @@ vector<pt> convexHull(vector<pt> &pts){
 ///Pick's Theorem: S = I + (B/2) - 1
 /// S = Area, I = lattice points inside polygon, B = lattice points on the boundary of the polygon
 /// Number of lattice points between point A and B = __gcd(abs(A.x-B.x), abs(A.y-B.y))
+inline void solve(int caseNum){
+	double w,h,a;
+	cin>>w>>h>>a;
+
+	if(int(a)%180==0){
+		cout<<fixed<<setprecision(12)<<w*h;
+	}
+	else{
+		a = toRad(a);
+		double ww=w/double(2);
+		double hh=h/double(2);
+		vector<pt>initial;
+		initial.push_back(pt(-ww,hh));
+		initial.push_back(pt(ww,hh));
+		initial.push_back(pt(ww,-hh));
+		initial.push_back(pt(-ww,-hh));
+
+		vector<pt>rotated = initial;
+		for(auto &p:rotated)p.rotateccw(a);
+
+		vector<pt>poly;
+		for(int i=0; i<4; i++){
+			pt A = initial[i];
+			pt B = initial[(i+1)%4];
+			for(int j=0; j<4; j++){
+				pt C = rotated[j];
+				pt D = rotated[(j+1)%4];
+				if(lineSegmentIntersection(A,B,C,D)){
+					poly.push_back(intersection(line(A,B), line(C,D)));
+				}
+			}
+		}
+
+		polarSort(poly);
+
+		cout<<fixed<<setprecision(12)<<polygonArea(poly)/2.0;
+	}
+}
+
+int main(){
+	#ifdef idk123
+		freopen("input.txt","r",stdin);
+		freopen("output.txt","w",stdout);
+	#endif
+	ios_base::sync_with_stdio(0);cin.tie(0);
+	int T=1;
+	//cin>>T;
+	for(int i=1; i<=T; i++)solve(i);
+return 0;
+}
