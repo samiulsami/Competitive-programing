@@ -50,7 +50,7 @@ struct line{
 		this->y=y;
 		a=x.y-y.y;
 		b=y.x-x.x;
-		c=1LL*x.x*y.y-1LL*x.y*y.x;
+		c=ptType2(x.x)*y.y-ptType2(x.y)*y.x;
 	}
 	
 	double distanceToPoint(pt p){
