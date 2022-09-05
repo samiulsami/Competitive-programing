@@ -20,6 +20,7 @@ inline int mod(ll x) {
     x=(x>>31)+(x&MOD);
     return int((x>>31)+(x&MOD));
 }
+
 struct segTree{
     int n;
     bool isReverse;
