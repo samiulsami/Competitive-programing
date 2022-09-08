@@ -1,3 +1,14 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef int64_t ll;
+#define pii(x) array<int,x>
+#define sz(x) int(x.size())
+#define all(x) x.begin(), x.end()
+#define dbug(x) cerr<<"Value of "<<#x<<": "<<x<<"\n"
+
+const int N = 2e5+5;
+const int MOD = 998244353;
 /*	
 	push_back(x) inserts 'x' at the end
 	push_front(x) inserts 'x' at the front
@@ -17,6 +28,7 @@
 	clear() deletes all elements O(n)
 	size() returns the number of elements in the treap O(1)
 */
+///Tested on https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum
 
 mt19937 rng((uint64_t) chrono::duration_cast<chrono::nanoseconds>(chrono::high_resolution_clock::now().time_since_epoch()).count());
 template<typename T>
@@ -26,14 +38,17 @@ struct implicitTreap{///0 indexed
 		int cnt=0;
 		uint32_t prior = uniform_int_distribution<int>(0, INT_MAX)(rng);
 		T val;
-		T minVal;
+		int sum=0,b=0,c=0;
 		bool rev=0;
-
+		bool lazyFlag=0;
 		data(T x):val(x){reset();}
 
 		inline void reset(){
-			minVal = val;
 			rev=0;
+			sum=val;
+			b=0;
+			c=0;
+			lazyFlag=0;
 		}
 	}*root=NULL;
 	
@@ -54,7 +69,7 @@ struct implicitTreap{///0 indexed
 
 	inline void Combine(data *cur, data *L, data *R){
 		///might need to use temporary variables
-		cur->minVal = min(L->minVal, R->minVal);
+		cur->sum = (L->sum + R->sum)%MOD;
 	}
 
 	inline void update_cnt(data *t){
@@ -67,36 +82,38 @@ struct implicitTreap{///0 indexed
 			if(t->r)Combine(t, t, t->r);
 		}
 	}
-		
+
 	inline void propagate(data *t, data *u){
-		if(u)u->rev^=1;
-	}		
-	
+		if(u->lazyFlag){
+			u->b = (1LL*u->b * t->b)%MOD;
+			u->c = (1LL*u->c*t->b + 1LL*t->c)%MOD;
+		}
+		else{
+			u->lazyFlag=1;
+			u->b = t->b;
+			u->c = t->c;
+		}
+	}
+		
 	inline void push(data *t){///push down lazy values
 		if(t && t->rev){
 			swap(t->l, t->r);
-			propagate(t,t->l);
-			propagate(t,t->r);
+			if(t->l)t->l->rev^=1;
+			if(t->r)t->r->rev^=1;
 			t->rev=0;
 		}
-	}
+		if(t && t->lazyFlag){
+			int cnt = getcnt(t->l) + getcnt(t->r) + 1;
+			ll curSum = (1LL*cnt*t->c + 1LL*t->sum*t->b)%MOD;
+			t->sum = curSum;
+			t->val = (1LL*t->val*t->b + 1LL*t->c)%MOD;
 
-	int leftMost(data *cur, int add=0){
-		push(cur);
-		if(cur->l && cur->minVal == cur->l->minVal)return leftMost(cur->l, add);
-		if(cur->r && cur->minVal == cur->r->minVal)return leftMost(cur->r, add + getcnt(cur->l) + 1);
-		return add + getcnt(cur->l);
-	}
-
-	int getMinPos(int L, int R){
-		assert(L<=R && L>=0 && R<getcnt(root));
-		data *l,*r,*m;
-		split(root,l,m,L);
-		split(m,m,r,R-L+1);
-		int ret = L+leftMost(m);
-		merge(root,l,m);
-		merge(root,root,r);
-		return ret;
+			if(t->l)propagate(t,t->l);
+			if(t->r)propagate(t,t->r);
+			t->lazyFlag=0;
+			t->b=0;
+			t->c=0;
+		}
 	}
 	
 	T query(int L, int R){
@@ -104,10 +121,23 @@ struct implicitTreap{///0 indexed
 		data *l,*r,*m;
 		split(root,l,m,L);
 		split(m,m,r,R-L+1);
-		T ret = m->minVal;
+		T ret = m->sum;
 		merge(root,l,m);
 		merge(root,root,r);
 		return ret;
+	}
+
+	void update(int L, int R, int b, int c){
+		assert(L<=R && L>=0 && R<getcnt(root));
+		data *l,*r,*m;
+		split(root,l,m,L);
+		split(m,m,r,R-L+1);
+		push(m);
+		m->lazyFlag=1;
+		m->b=b;
+		m->c=c;
+		merge(root,l,m);
+		merge(root,root,r);
 	}
 
 	void reverse(int L, int R){
@@ -199,3 +229,54 @@ struct implicitTreap{///0 indexed
 		update_cnt(t);
 	}
 };
+
+inline void solve(int caseNum){
+	int n,q;
+	cin>>n>>q;
+
+	implicitTreap<int>T;
+	for(int i=0,x; i<n; i++){
+		cin>>x;
+		T.push_back(x);
+	}
+
+	int qt,l,r,b,c;
+	while(q--){
+
+		cin>>qt;
+		if(qt==0){
+			cin>>b>>c;
+			if(b==T.size())T.push_back(c);
+			else T.insert(b,c);
+		}
+		else if(qt==1){
+			cin>>l;
+			T.erase(l);
+		}
+		else if(qt==2){
+			cin>>l>>r;
+			T.reverse(l,r-1);
+		}
+		else if(qt==3){
+			cin>>l>>r>>b>>c;
+			T.update(l,r-1,b,c);
+		}
+		else {
+			cin>>l>>r;
+			cout<<T.query(l,r-1)<<"\n";;
+		}
+	}
+
+}
+
+int main(){
+	#ifdef idk123
+		freopen("input.txt","r",stdin);
+		freopen("output.txt","w",stdout);
+	#endif
+	ios_base::sync_with_stdio(0);cin.tie(0);
+	int T=1;
+	//cin>>T;
+	for(int i=1; i<=T; i++)solve(i);
+return 0;
+}
