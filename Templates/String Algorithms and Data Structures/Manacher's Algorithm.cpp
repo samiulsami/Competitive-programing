@@ -1,6 +1,10 @@
-void manacher(const string &s){
+int odd[N];
+int even[N];
+
+void manacher(const string &s){///0 indexed
 	int n = s.length();
-	vector<int>odd(n),even(n);
+	fill(odd,odd+n,0);
+	fill(even,even+n,0);
 	///odd[i] =  radius of the longest odd palindrome centered at i (indices i-odd[i]+1 to i+odd[i]-1 inclusive)
 	///even[i] = radius of the longest even palindrome centered at index i and i-1 (indices i-even[i] to i+even[i]-1 inclusive)
 	///even[i] is 0 if no even palindrome is centered at index i
@@ -23,4 +27,10 @@ void manacher(const string &s){
 			r=i+k-1;
 		}
 	}
+}
+
+inline bool isPal(int l, int r){
+	int len = (r-l+1);
+	if(len&1)return l+2*odd[l+(len>>1)]-2>=r;
+	return l+2*even[l+(len>>1)]-1>=r;
 }
