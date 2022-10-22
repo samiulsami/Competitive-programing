@@ -1,13 +1,10 @@
-const int K = 150;///Block size
-const int L = (N+K-1)/K;///Number of blocks
-
 struct fastUpdate{
 	///0 - indexed
-	///O(1) update, O(L+K+K) query
+	///O(1) update, O(sqrt(N)) query
 	int arr[N];
-	long long Blocks[L];
+	long long Blocks[K];
 
-	void reset(int n){for(int i=0,x=n/K; i<=x; i++)Blocks[i]=0;}
+	void reset(){memset(Blocks,0,sizeof(Blocks));}
 
 	inline void set(int pos, int val){
 		Blocks[pos/K]+=val;
