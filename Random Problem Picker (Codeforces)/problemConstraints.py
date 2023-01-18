@@ -1,6 +1,6 @@
 username = "wakaranai"
-minRating = 1700
-maxRating = 1900
+minRating = 1800
+maxRating = 2000
 #Leave empty to ignore tags
 includedTags = []
 excludedTags = []

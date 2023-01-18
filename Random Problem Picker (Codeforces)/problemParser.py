@@ -33,6 +33,9 @@ def parseProblems(curdate):
     urlList = []
     for problem in problems:
         contestId = str(problem["contestId"])
+        if int(contestId)<915: 
+            continue
+            
         if len(contestId)==0:
             continue;
         
