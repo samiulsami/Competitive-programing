@@ -12,23 +12,22 @@ inline uint64_t hashmodmul(uint64_t a, uint64_t b){
 }
 inline uint64_t hashAdd(uint64_t a, uint64_t b){a+=b;return a>=mod1?a-mod1:a;}
 inline uint64_t hashSub(uint64_t a, uint64_t b){a-=b;return a>=mod1?a+mod1:a;}
-const uint64_t base1 = (uint64_t)1541 + (uint64_t)rng()%(uint64_t)(1<<22);
+const uint64_t base1 = uint64_t(1541) + (uint64_t(rng())%(1uLL<<60));
 vector<uint64_t>P{1};
 
 struct Hash{///0 indexed
-    vector<uint64_t>H;
-    vector<uint64_t>R;
+    vector<uint64_t>H,R;
     int n;
     Hash(){}
     template<typename T>
     Hash(const T &s){
         n = int(s.size());
         while((int)P.size()<=n)P.push_back(hashmodmul(base1,P.back()));
-        H.resize(n+1);H[0]=0;
-        R.resize(n+2);R[n+1]=0;R[0]=0;
-        for(int i=0,j=n+1; j>=2 && i<n; i++,j--){
+        H.resize(n+1,0);
+        R.resize(n+2,0);
+        for(int i=0; i<n; i++){
             H[i+1] = hashAdd(hashmodmul(H[i], base1), (uint64_t)s[i]);
-            R[j-1] = hashAdd(hashmodmul(R[j], base1), (uint64_t)s[j-2]);
+            R[n-i] = hashAdd(hashmodmul(R[n-i+1], base1), (uint64_t)s[n-i-1]);
         }
     }
     inline uint64_t fHash(int l, int r){return hashSub(H[r+1], hashmodmul(H[l], P[r-l+1]));}
