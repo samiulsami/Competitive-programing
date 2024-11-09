@@ -11,7 +11,7 @@ CNT ?= 10
 
 .PHONY: noargs
 noargs:
-	@echo "'make %.out' to compile '%.cpp'"
+	@echo "'make A' to compile 'A.cpp'"
 	@echo "'make gen' to generate '$(CNT)' copies of '$(BASE)'"
 	@echo "'make clean' to remove generated .cpp files"
 	@echo "'make clean-all' to remove all generated files"
